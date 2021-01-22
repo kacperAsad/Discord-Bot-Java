@@ -12,11 +12,6 @@ import java.awt.*;
 public class CommandListener extends ListenerAdapter {
 
     public TextChannel loggingChannel = null;
-    private Dotenv environment;
-
-    public CommandListener(Dotenv env){
-        this.environment = env;
-    }
 
     public void log(Member member , String context){
         if (loggingChannel != null){
