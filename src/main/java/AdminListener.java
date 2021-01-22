@@ -1,11 +1,11 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 
 /**
@@ -56,21 +56,43 @@ public class AdminListener extends ListenerAdapter {
                 if (Settings.getValue("logger-channel").equalsIgnoreCase("")){
                     Settings.pushValue("logger-channel", channel.getId());
                     DiscordLogger.reload();
-                    DiscordLogger.log("Ustawiono kanał do logowania na " + channel.getName());
+                    DiscordLogger.log("Ustawiono kanał do logowania na " + channel.getAsMention());
                 }else{
                     String old = Settings.getValue("logger-channel");
                     Settings.pushValue("logger-channel", channel.getId());
                     DiscordLogger.reload();
-                    DiscordLogger.log("Zmieniono kanał do logów z #"+jda.getTextChannelById(old).getName()+" na #"+channel.getName());
+                    DiscordLogger.log("Zmieniono kanał do logów z "+jda.getTextChannelById(old).getAsMention()+" na "+channel.getAsMention());
                 }
+
             }else if(content.equalsIgnoreCase("?save")){
                 Settings.saveToFile(Settings.getValue("file_name"));
                 DiscordLogger.log("Zapis ustawień wykonany");
-            }else if(content.equalsIgnoreCase("?exit")){
-                DiscordLogger.log("Wyłączanie bota");
+                channel.sendMessage("Zapis ustawień wykonany").queue();
 
+            }else if(content.equalsIgnoreCase("?exit")){
+                DiscordLogger.log("Zdalne wywołanie zamknięcia bota");
+                channel.sendMessage("Zdalne wyłączanie bota zostało wywołane, za chwilę nastąpi jego wyłączenie").queue();
                 jda.shutdown();
                 System.exit(0);
+
+            }else if(content.equalsIgnoreCase("?settings")){
+                DiscordLogger.reload();
+                DiscordLogger.log("Wywyłano komendę ?settings na kanale "+channel.getAsMention());
+                if (channel != DiscordLogger.loggingChannel){
+                    channel.sendMessage(Settings.keyValue.toString()).queue(new Consumer<Message>() {
+                        @Override
+                        public void accept(Message message) {
+                            message.delete().queueAfter(5, TimeUnit.SECONDS);
+                            event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
+                        }
+                    });
+                }else{
+                    channel.sendMessage(Settings.keyValue.toString()).queue();
+                }
+
+            }else if(content.equalsIgnoreCase("?trigger error")){
+                DiscordLogger.error("Testowa wiadomość", channel, 5);
+                event.getMessage().delete().queueAfter(5, TimeUnit.SECONDS);
             }
         }
     }

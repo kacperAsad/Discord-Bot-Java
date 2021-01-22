@@ -23,7 +23,9 @@ public class Settings {
         return MapSaver.saveMapInFile(fileName, keyValue);
     }
     public static boolean readFromFile(String filename){
-        var map = MapReader.loadMapWithFile(filename);
-        return map != null;
+        keyValue.putAll(MapReader.loadMapWithFile(filename));
+
+        // tak, wiem, nie ma sensu
+        return keyValue != null;
     }
 }

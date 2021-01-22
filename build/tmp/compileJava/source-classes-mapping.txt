@@ -2,13 +2,15 @@ MapIO/MapSaver.java
  MapIO.MapSaver
 MapIO/MapReader.java
  MapIO.MapReader
-Settings.java
- Settings
 CommandListener.java
  CommandListener
+Settings.java
+ Settings
 DiscordLogger.java
  DiscordLogger
+ DiscordLogger$1
 Main.java
  Main
 AdminListener.java
  AdminListener
+ AdminListener$1

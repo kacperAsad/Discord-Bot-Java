@@ -15,11 +15,15 @@ public class Main {
         Settings.pushValue("file_name", "data");
         Settings.readFromFile(Settings.getValue("file_name"));
 
+
         JDA builder = JDABuilder.createDefault(args[0]).build();
         builder.getPresence().setActivity(Activity.playing("Budowanie to całkiem ciekawa sprawa..."));
 
         DiscordLogger.init(builder);
+
         AdminListener adminListener = new AdminListener(builder);
         builder.addEventListener(adminListener);
+        DiscordLogger.reload();
+        DiscordLogger.log("Inicjalizacja adminListener");
     }
 }
